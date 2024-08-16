@@ -1,0 +1,55 @@
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables
+
+#==========================================#
+# targets and srcs
+#==========================================#
+# f2py targets
+TARGET_MODNAME = calcpi4py
+F2PY_MODS += precision.mod
+# F2PY_MODS += math.mod
+F2PY_MODS += leibniz_formula.mod
+
+# f90 prog targets
+F90_PROGS += calc_pi_test.prog
+
+# f90 srcs
+SRCS += $(wildcard $(SRC_DIR)/parameter/*.f90)
+SRCS += $(wildcard $(SRC_DIR)/calc_pi/*.f90)
+SRCS += $(wildcard ./srcprog/*.f90)
+
+
+#==========================================#
+# build settings
+#==========================================#
+SRC_DIR        = ./src
+BUILD_DIR      = ./build
+LIB_DIR        = $(BUILD_DIR)/lib
+BIN_DIR        = $(BUILD_DIR)/bin
+F2PY_OUT_DIR   = $(LIB_DIR)
+
+FC             = gfortran
+F2PY           = f2py
+FPP            = cpp -P -traditional $(DFLAGS)
+# FPP            = cp -f
+AR             = ar cr
+
+LIB            =
+INC            = $(addprefix -I, $(MOD_DIR))
+FFLAGS         = -ffree-line-length-0 -O3
+FMOD_OUTPUT    = $(addprefix -J, $(MOD_DIR))
+# DFLAGS         = -D_INTLONG_ERROR
+OPENMP         = -fopenmp
+F2PY_EXTRA_LIB = -lgomp -lgfortran
+F2PY_LOG       = $(BUILD_SRC_DIR)/f2py.log
+
+
+#==========================================#
+# main
+#==========================================#
+all: f2py f90
+
+F2PY_BUILD_SCRIPT ?= .
+include ${F2PY_BUILD_SCRIPT}/simple/make.inc
+
+.PHONY: all clean
+.PHONY: f2py f90

@@ -3,6 +3,7 @@
 ## Prerequisites
 - Linux system
 - make
+- awk
 - Fortran compiler (e.g. `gfortran`)
 - Python
 - f2py

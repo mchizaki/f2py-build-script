@@ -40,3 +40,12 @@ You can also use the Makefile of the simple version `${F2PY_BUILD_SCRIPT}/simple
 ## Example
 test files: `tests/`
 
+build (normal)
+```
+$ make -j
+```
+
+build (simple)
+```
+$ make -f Makefile-simple -j
+```

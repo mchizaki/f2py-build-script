@@ -16,7 +16,7 @@ $ conda install f2py meson
 ```
 
 ## Installation
-1. Download these script files and place them in any directory
+1. Place the scripts in `f2py_build_script` on any directory
 (e.g. `$HOME/local/make_build/script`).
 2. Register the directory name in the environment variable `${F2PY_BUILD_SCRIPT}`.
 
@@ -36,4 +36,7 @@ $ conda install f2py meson
 ## Usage
 Copy `${F2PY_BUILD_SCRIPT}/Makefile.example` to your Fortran project directory as a file named `Makefile`.
 You can also use the Makefile of the simple version `${F2PY_BUILD_SCRIPT}/simple/Makefile.example`.
+
+## Example
+test files: `tests/`
 

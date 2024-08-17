@@ -17,7 +17,7 @@ $ conda install f2py meson
 
 ## Installation
 1. Place the scripts in `f2py_build_script` on any directory
-(e.g. `$HOME/local/make_build/script`).
+(e.g. `$HOME/local/make_build_script`).
 2. Register the directory name in the environment variable `${F2PY_BUILD_SCRIPT}`.
 
 ```

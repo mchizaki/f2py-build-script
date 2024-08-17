@@ -8,7 +8,7 @@
 - Python
 - f2py
 - [recommended] meson (if f2py version >= 1.26)
-- [optional] Fortran preprocessor
+- [optional] Fortran preprocessor (e.g. `cpp`)
 
 If you use conda, f2py and meson can be installed by the following command:
 ```

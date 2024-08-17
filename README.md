@@ -12,7 +12,7 @@
 
 If you use conda, f2py and meson can be installed by the following command:
 ```
-$ conda install f2py meson
+$ conda install numpy meson
 ```
 
 ## Installation

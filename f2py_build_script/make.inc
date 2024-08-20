@@ -4,7 +4,10 @@ this_dir := $(dir $(this_makefile))
 #==========================================#
 # settings
 #==========================================#
+ifdef F2PY_MODS
+TARGET_MODNAME     ?= fmod4py
 TARGET_F2PY        ?= $(F2PY_OUT_DIR)/$(TARGET_MODNAME)$(F2PY_EXT_SUFFIX)
+endif
 TARGET_F90PROGS    ?= $(call progname2target,$(F90_PROGS))
 TARGET_LIB         ?= $(LIB_DIR)/lib$(TARGET_LIBNAME).a
 
@@ -20,7 +23,7 @@ BUILD_OUTSRC_DIR ?= $(BUILD_SRC_DIR)/other/
 
 
 #==========================================#
-# auto settings
+# procedures
 #==========================================#
 _get_exist_pathlist    = $(eval _plist:=$(foreach path, ${1}, $(if $(wildcard ${path}),${path})))
 _get_notexist_pathlist = $(eval _plist:=$(foreach path, ${1}, $(if $(wildcard ${path}),,${path})))
@@ -42,10 +45,12 @@ ifdef F2PY_LOG
 f2py_flags += > $(F2PY_LOG) 2>&1
 endif
 
-f2py = FC="$(FC)" FFLAGS="$(OPENMP) $(FFLAGS)" $(F2PY)
 # backend of f2py (version >= 1.26) is meson
 # => "--fcompiler" & "--f90flags" options are not used
-# f2py = $(F2PY) --fcompiler='$(FC)' --f90flags='$(OPENMP) $(FFLAGS)'
+f2py = FC="$(FC)" FFLAGS="$(OPENMP) $(FFLAGS)" $(F2PY) --backend meson
+
+# backend is distutils [not recommended]
+# f2py = $(F2PY) --fcompiler='$(FC)' --f90flags='$(OPENMP) $(FFLAGS)' --backend distutils
 
 
 
@@ -74,10 +79,6 @@ vpath % .: $(BUILD_SRC_DIR)
 #==========================================#
 # preprocessing and copy
 #==========================================#
-# $(BUILD_SRC_DIR)/%.f90: $(SRC_DIR)/%.f90 | $(SRC_INC_DEP)
-# 	$(call mkdir_if_not_exist,$(dir $@))
-# 	$(FPP) $< $@
-
 define fpp_rule
 ${1}: ${2} | $(SRC_INC_DEP)
 	$(call mkdir_if_not_exist,$(dir ${1}))

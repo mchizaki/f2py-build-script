@@ -1,0 +1,2 @@
+Makefile.example linguist-language=Makefile
+*.make.inc linguist-language=Makefile

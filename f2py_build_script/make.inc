@@ -47,10 +47,10 @@ endif
 
 # backend of f2py (version >= 1.26) is meson
 # => "--fcompiler" & "--f90flags" options are not used
-f2py = FC="$(FC)" FFLAGS="$(OPENMP) $(FFLAGS)" $(F2PY) --backend meson
+f2py = FC="$(FC)" FFLAGS="$(OPENMP) $(FFLAGS)" $(F2PY)
 
 # backend is distutils [not recommended]
-# f2py = $(F2PY) --fcompiler='$(FC)' --f90flags='$(OPENMP) $(FFLAGS)' --backend distutils
+# f2py = $(F2PY) --fcompiler='$(FC)' --f90flags='$(OPENMP) $(FFLAGS)'
 
 
 

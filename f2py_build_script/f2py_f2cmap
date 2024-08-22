@@ -2,27 +2,27 @@ dict(
     real = dict(
         real32  = 'float',
         real64  = 'double',
-        real128 = 'long_double',
+#        real128 = 'long_double',
         sp      = 'float',
         dp      = 'double',
-        qp      = 'long_double'
+#        qp      = 'long_double',
     ),
     integer = dict(
         int16  = 'short',
         int32  = 'int',
         int64  = 'long',
-        int128 = 'long_long',
+#        int128 = 'long_long',
         i2     = 'short',
         i4     = 'int',
         i8     = 'long',
-        i16    = 'long_long'
+#        i16    = 'long_long',
     ),
     complex = dict(
         real32  = 'complex_float',
         real64  = 'complex_double',
-        real128 = 'complex_long_double',
+#        real128 = 'complex_long_double',
         sp      = 'complex_float',
         dp      = 'complex_double',
-        qp      = 'complex_long_double'
+#        qp      = 'complex_long_double',
     )
 )

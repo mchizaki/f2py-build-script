@@ -40,10 +40,11 @@ progname2target = $(addprefix $(BIN_DIR)/, $(patsubst %.prog, %$(F90PROG_EXT_SUF
 fflags     += $(OPENMP) $(FFLAGS) $(INC) $(LIB) $(SHARED) $(FMOD_OUTPUT)
 ld_flags   += $(OPENMP) $(FFLAGS) $(INC) $(LIB) -L$(LIB_DIR) -l$(TARGET_LIBNAME)
 
-f2py_flags += $(F2PY_FLAGS) -L$(LIB_DIR) -l$(TARGET_LIBNAME) $(F2PY_EXTRA_LIB) $(LIB) $(INC)
+f2py_flags = $(F2PY_FLAGS) $(INC) $(F2PY_EXTRA_LIB) $(LIB) -L$(LIB_DIR)
 ifdef F2PY_LOG
-f2py_flags += > $(F2PY_LOG) 2>&1
+f2py_log_flag = > $(F2PY_LOG) 2>&1
 endif
+get_f2py_flags = $(eval _f2py_flags := $(f2py_flags) $(if $(wildcard $(TARGET_LIB)),-l$(TARGET_LIBNAME)) $(f2py_log_flag))
 
 # backend of f2py (version >= 1.26) is meson
 # => "--fcompiler" & "--f90flags" options are not used
@@ -197,12 +198,14 @@ endif
 ##################################################################
 # targets                                                        #
 ##################################################################
-$(TARGET_F2PY):
-	$(f2py) -m $(TARGET_MODNAME) -c $^ $(f2py_flags)
+$(TARGET_F2PY): | $(MOD_DIR)
+	$(call get_f2py_flags)
+	$(f2py) -m $(TARGET_MODNAME) -c $^ $(_f2py_flags)
 	$(call mkdir_if_not_exist,$(dir $@))
 	$(if $(patsubst ./%,,$(dir $@)),mv $(notdir $@) $@)
 
-$(TARGET_F90PROGS): | $(BIN_DIR)
+
+$(TARGET_F90PROGS): | $(BIN_DIR) $(MOD_DIR)
 	$(FC) $^ $(ld_flags) -o $@
 
 

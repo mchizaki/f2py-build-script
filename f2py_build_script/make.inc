@@ -198,15 +198,32 @@ endif
 ##################################################################
 # targets                                                        #
 ##################################################################
+#==========================================#
+# rules
+#==========================================#
 $(TARGET_F2PY): | $(MOD_DIR)
 	$(call get_f2py_flags)
-	$(f2py) -m $(TARGET_MODNAME) -c $^ $(_f2py_flags)
+	$(call get_f2py_deps,$^)
+	$(f2py) -m $(TARGET_MODNAME) -c $(f2py_deps) $(_f2py_flags)
 	$(call mkdir_if_not_exist,$(dir $@))
 	$(if $(patsubst ./%,,$(dir $@)),mv $(notdir $@) $@)
 
 
 $(TARGET_F90PROGS): | $(BIN_DIR) $(MOD_DIR)
 	$(FC) $^ $(ld_flags) -o $@
+
+
+#==========================================#
+# f2py macro
+#==========================================#
+_f2py_f90_deps = $(filter %.f90, ${1})
+_f2py_obj_deps = $(filter %.o, ${1})
+get_f2py_deps = $(eval f2py_deps := $(_f2py_f90_deps))\
+$(eval f2py_deps +=\
+	$(foreach obj, $(_f2py_obj_deps), \
+		$(if $(findstring $(patsubst %.o,%,${obj}), $(f2py_deps)),, $(obj))\
+	)\
+)
 
 
 

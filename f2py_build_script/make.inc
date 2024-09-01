@@ -38,12 +38,13 @@ progname2target = $(addprefix $(BIN_DIR)/, $(patsubst %.prog, %$(F90PROG_EXT_SUF
 # flags
 #==========================================#
 fflags     += $(OPENMP) $(FFLAGS) $(INC) $(LIB) $(SHARED) $(FMOD_OUTPUT)
-ld_flags   += $(OPENMP) $(FFLAGS) $(INC) $(LIB) -L$(LIB_DIR) -l$(TARGET_LIBNAME)
+ld_flags   += $(OPENMP) $(FFLAGS) $(INC) $(LIB) -L$(LIB_DIR)
 
 f2py_flags = $(F2PY_FLAGS) $(INC) $(F2PY_EXTRA_LIB) $(LIB) -L$(LIB_DIR)
 ifdef F2PY_LOG
 f2py_log_flag = > $(F2PY_LOG) 2>&1
 endif
+get_ld_flags   = $(eval _ld_flags   := $(ld_flags)   $(if $(wildcard $(TARGET_LIB)),-l$(TARGET_LIBNAME)))
 get_f2py_flags = $(eval _f2py_flags := $(f2py_flags) $(if $(wildcard $(TARGET_LIB)),-l$(TARGET_LIBNAME)) $(f2py_log_flag))
 
 # backend of f2py (version >= 1.26) is meson
@@ -72,7 +73,7 @@ vpath % .: $(BUILD_SRC_DIR)
 
 %.o: % | $(MOD_DIR) $(LIB_DIR)
 	$(FC) -c $< -o $@ $(fflags)
-	$(if $($@.is_prog),,\
+	$(if $($@.is_prog)$(./$@.is_prog),,\
 		$(AR) $(TARGET_LIB) $@\
 	)
 
@@ -107,7 +108,7 @@ ifeq ($(findstring clean, $(MAKECMDGOALS)),)
 # generate dependencies - include files -
 #==========================================#
 $(SRC_INC_DEP): $(SRCS) | $(DEP_DIR)
-	$(GD_INC) $(SRCS) > $(SRC_INC_DEP)
+	$(GD_INC) $(SRCS) > $@
 # 	$(GD_INC) $^ > $@
 
 include $(SRC_INC_DEP)
@@ -157,7 +158,7 @@ all_build_srcs = $(build_srcs) $(foreach src, $(SRCS), $(build_inc_srcs))
 # generate dependencies of build srcs
 #==========================================#
 $(BUILD_SRC_DEP): $(DEP_DIR) $(SRC_INC_DEP) | $(all_build_srcs)
-	$(GD) $(build_srcs) > $(BUILD_SRC_DEP)
+	$(GD) $(build_srcs) > $@
 # 	$(GD) $^ > $@
 
 # define build src variables
@@ -210,7 +211,8 @@ $(TARGET_F2PY): | $(MOD_DIR)
 
 
 $(TARGET_F90PROGS): | $(BIN_DIR) $(MOD_DIR)
-	$(FC) $^ $(ld_flags) -o $@
+	$(call get_ld_flags)
+	$(FC) $^ $(_ld_flags) -o $@
 
 
 #==========================================#
@@ -238,3 +240,4 @@ clean:
 	$(call rm_if_exist,$(TARGET_F2PY))
 	$(call rm_if_exist,$(TARGET_LIB))
 	$(call rmrf_if_exist,$(BUILD_DIR))
+

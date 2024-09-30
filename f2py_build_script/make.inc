@@ -125,11 +125,15 @@ src_dir          = $(call append_slash,$(SRC_DIR))
 build_src_dir    = $(call append_slash,$(BUILD_SRC_DIR))
 build_outsrc_dir = $(call append_slash,$(BUILD_OUTSRC_DIR))
 
+# change build_srcs file extension: .f90
+_addsuffix_f90 = $(if $(filter %.f90, ${1}), ${1}, $(addsuffix .f90, ${1}))
+addsuffix_f90 = $(foreach src, ${1}, $(call _addsuffix_f90,${src}))
+
 # constant
 _srcs_in_srcdir  = $(filter $(src_dir)%, $(SRCS))
 _srcs_out_srcdir = $(filter-out $(src_dir)%, $(SRCS))
-build_srcs += $(patsubst $(src_dir)%,$(build_src_dir)%,$(_srcs_in_srcdir))
-build_srcs += $(addprefix $(build_outsrc_dir), $(notdir $(_srcs_out_srcdir)))
+build_srcs += $(call addsuffix_f90,$(patsubst $(src_dir)%,$(build_src_dir)%,$(_srcs_in_srcdir)))
+build_srcs += $(call addsuffix_f90,$(addprefix $(build_outsrc_dir), $(notdir $(_srcs_out_srcdir))))
 outsrcdirs = $(sort $(dir $(filter-out $(src_dir)%, $(SRCS))))
 
 # temporary variable and macro depending on $(src)
@@ -137,7 +141,7 @@ _src_dir = $(firstword $(foreach _dir, $(src_dir) $(outsrcdirs), \
 	$(if $(filter ${_dir}%, ${src}),${_dir}))\
 )
 _build_src_dir = $(if $(filter $(src_dir), $(_src_dir)),$(build_src_dir),$(build_outsrc_dir))
-src2buildsrc = $(patsubst $(_src_dir)%, $(_build_src_dir)%, ${1})
+src2buildsrc = $(call addsuffix_f90,$(patsubst $(_src_dir)%, $(_build_src_dir)%, ${1}))
 
 inc_srcs       = $($(src).inc)
 build_inc_src  = $(call src2buildsrc,$(inc_src))
@@ -245,4 +249,5 @@ clean:
 	$(call rm_if_exist,$(TARGET_F2PY))
 	$(call rm_if_exist,$(TARGET_LIB))
 	$(call rmrf_if_exist,$(BUILD_DIR))
+
 
